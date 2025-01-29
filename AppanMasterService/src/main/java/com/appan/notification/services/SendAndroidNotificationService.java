@@ -1,0 +1,137 @@
+package com.appan.notification.services;
+
+import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.appan.ErrorMessages;
+import com.appan.countrymaster.region.models.CommonResponse;
+import com.appan.entity.SendSmsEmailMaster;
+import com.appan.entity.UserMaster;
+import com.appan.notification.models.SendAndroidRequest;
+import com.appan.repositories.Repositories.SendSmsEmailMasterRepository;
+import com.appan.repositories.Repositories.UserMasterRepository;
+import com.google.common.base.Strings;
+
+import jakarta.validation.Valid;
+
+@Service
+public class SendAndroidNotificationService {
+
+	@Autowired
+	private UserMasterRepository userMasterRepository;
+
+	@Autowired
+	private SendSmsEmailMasterRepository repository;
+
+	private static final Logger logger = LoggerFactory.getLogger(SendAndroidNotificationService.class);
+
+	public CommonResponse sendnotif(@Valid SendAndroidRequest req) {
+
+		CommonResponse response = new CommonResponse();
+
+		try {
+			UserMaster user = userMasterRepository.findByUserId(req.getUsername().toUpperCase());
+			if (user == null) {
+				response.setStatus(false);
+				response.setMessage(ErrorMessages.INVALID_USERNAME);
+				response.setRespCode("01");
+				return response;
+			}
+
+			if (Strings.isNullOrEmpty(req.getRegisterUser())) {
+				response.setStatus(false);
+				response.setMessage("Username is required");
+				response.setRespCode("01");
+				return response;
+			}
+
+			processAndroidUser(req.getRegisterUser(), req);
+
+			response.setStatus(true);
+			response.setMessage("Android notification request accepted successfully.");
+			response.setRespCode("00");
+		} catch (Exception e) {
+			logger.error("Exception occurred while creating wallet: ", e);
+			response.setStatus(false);
+			response.setMessage("EXCEPTION");
+			response.setRespCode("EX");
+		}
+
+		return response;
+
+	}
+
+	public void processAndroidUser(String registerUser, SendAndroidRequest req) {
+		String[] numbersArray = registerUser.split(",");
+
+		for (String mobileNo : numbersArray) {
+			mobileNo = mobileNo.trim();
+
+			if (!mobileNo.isEmpty()) {
+				SendSmsEmailMaster mst = new SendSmsEmailMaster();
+				mst.setSmsEmailType("ANDROID");
+				mst.setUserMobileType("ANDROID");
+				mst.setRegisterUser(req.getRegisterUser()); // username
+				mst.setApiName(req.getApiName()); // title
+				mst.setMessage(req.getMessage()); // message
+				mst.setLink(req.getLink()); // link
+				mst.setImage(req.getImage()); // image
+				mst.setStatus("P");
+				mst.setCreatedBy(req.getUsername().toUpperCase());
+				mst.setCreatedDt(new Date());
+				mst.setMobileNo(mobileNo);
+				repository.save(mst);
+			}
+		}
+	}
+
+	public CommonResponse bulkNotif(@Valid SendAndroidRequest req) {
+		CommonResponse response = new CommonResponse();
+
+		try {
+			UserMaster user = userMasterRepository.findByUserId(req.getUsername().toUpperCase());
+			if (user == null) {
+				response.setStatus(false);
+				response.setMessage(ErrorMessages.INVALID_USERNAME);
+				response.setRespCode("01");
+				return response;
+			}
+
+			if (Strings.isNullOrEmpty(req.getUserType())) {
+				response.setStatus(false);
+				response.setMessage("User Type is required");
+				response.setRespCode("01");
+				return response;
+			}
+
+			SendSmsEmailMaster mst = new SendSmsEmailMaster();
+			mst.setSmsEmailType("ANDROID");
+			mst.setUserMobileType("USER_TYPE");
+			mst.setUserType(req.getUserType()); // usertype
+			mst.setApiName(req.getApiName()); // title
+			mst.setMessage(req.getMessage()); // message
+			mst.setLink(req.getLink()); // link
+			mst.setImage(req.getImage()); // image
+			mst.setStatus("P");
+			mst.setCreatedBy(req.getUsername().toUpperCase());
+			mst.setCreatedDt(new Date());
+			repository.save(mst);
+
+			response.setStatus(true);
+			response.setMessage("Bulk Android notification request accepted successfully.");
+			response.setRespCode("00");
+		} catch (Exception e) {
+			logger.error("Exception occurred while creating wallet: ", e);
+			response.setStatus(false);
+			response.setMessage("EXCEPTION");
+			response.setRespCode("EX");
+		}
+
+		return response;
+	}
+
+}
