@@ -84,6 +84,9 @@ public class ModifyUserManagKycService {
 		existingUser.setAccountNumber(req.getAccountNumber());
 		existingUser.setAddressProof(req.getAddressProof());
 		existingUser.setAadharNo(req.getAadharNo());
+		existingUser.setAccountType(req.getAccountType());
+		existingUser.setUpiId(req.getUpiId());
+		existingUser.setPaymentMethod(req.getPaymentMethod());
 	}
 
 	private void updateVerificationFiles(UserManagementMaster existingUser, CreateNewUserKycRequest req,

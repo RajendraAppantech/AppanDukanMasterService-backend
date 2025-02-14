@@ -47,7 +47,7 @@ public class BackOfficeCreateService {
                 return response;
             }
 
-            String customUserId = generateCustomUserId(prefix);
+            String customUserId = generateCustomUserId(req.getUserType(), prefix);
 
             BackOfficeManagement backOffice = new BackOfficeManagement();
             backOffice.setUserId(customUserId);
@@ -78,21 +78,26 @@ public class BackOfficeCreateService {
         }
     }
 
-    private String generateCustomUserId(String userType) {
-        String lastUserId = repository.findLastUserIdByUserType(userType);
+    private String generateCustomUserId(String userType, String prefix) {
 
-        String numberPart = "000000";
-        if (lastUserId != null && lastUserId.length() > 6) {
-            numberPart = lastUserId.substring(lastUserId.length() - 6);
-        }
+		if (prefix == null) {
+			throw new IllegalArgumentException("Prefix cannot be null.");
+		}
 
-        int currentNumber = Integer.parseInt(numberPart);
-        currentNumber++;
+		if (userType == null) {
+			throw new IllegalArgumentException("User type cannot be null.");
+		}
 
-        String newNumberPart = String.format("%06d", currentNumber);
+		String lastUserId = repository.findLastUserIdByUserType(userType);
 
-        String prefix = usernameFormatRepository.findPrefixByUserType(userType);
+		String numberPart = "000000";
+		if (lastUserId != null && lastUserId.length() > 6) {
+			numberPart = lastUserId.substring(lastUserId.length() - 6);
+		}
 
-        return prefix + newNumberPart;
-    }
+		int currentNumber = Integer.parseInt(numberPart) + 1;
+		String newNumberPart = String.format("%06d", currentNumber);
+
+		return prefix + newNumberPart;
+	}
 }

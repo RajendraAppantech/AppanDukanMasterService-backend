@@ -23,6 +23,7 @@ public class ProfilesMasterModel {
 	@JsonSerialize(using = DateSerializer.class)
 	private Date authDate;
 	private String authStatus;
+	private String menu;
 
 	public Long getId() {
 		return id;
@@ -126,6 +127,14 @@ public class ProfilesMasterModel {
 
 	public void setAuthStatus(String authStatus) {
 		this.authStatus = authStatus;
+	}
+
+	public String getMenu() {
+		return menu;
+	}
+
+	public void setMenu(String menu) {
+		this.menu = menu;
 	}
 
 }

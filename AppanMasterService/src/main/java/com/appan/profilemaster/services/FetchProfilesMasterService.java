@@ -131,6 +131,7 @@ public class FetchProfilesMasterService {
 		profilesModel.setModifyDt(model.getModifyDt());
 		profilesModel.setAuthBy(model.getAuthBy());
 		profilesModel.setAuthDate(model.getAuthDate());
+		profilesModel.setMenu(model.getMenu());
 		if (Strings.isNullOrEmpty(model.getAuthStatus())) {
 			profilesModel.setAuthStatus("UNKNOWN");
 		} else if (model.getAuthStatus().equalsIgnoreCase("1")) {

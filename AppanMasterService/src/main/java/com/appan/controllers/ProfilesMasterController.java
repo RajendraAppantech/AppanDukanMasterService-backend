@@ -19,6 +19,7 @@ import com.appan.profilemaster.services.AuthOrBlockProfilesMasterService;
 import com.appan.profilemaster.services.CreateProfilesMasterService;
 import com.appan.profilemaster.services.FetchProfilesMasterService;
 import com.appan.profilemaster.services.ModifyProfilesMasterService;
+import com.appan.profilemaster.services.OperationAutoriService;
 
 import jakarta.validation.Valid;
 
@@ -38,6 +39,9 @@ public class ProfilesMasterController {
 
 	@Autowired
 	private AuthOrBlockProfilesMasterService authBlockService;
+	
+	@Autowired
+	private OperationAutoriService operationAutoriService;
 
 	@PostMapping("/create")
 	public CommonResponse create(@Valid @RequestBody CreateProfilesMasterRequest req) {
@@ -53,6 +57,11 @@ public class ProfilesMasterController {
 	@PostMapping("/modify")
 	public CommonResponse modify(@Valid @RequestBody ModifyProfilesMasterRequest req) {
 		return modifyService.modify(req);
+	}
+	
+	@PostMapping("/opAuthorization")
+	public CommonResponse opAuth(@Valid @RequestBody ModifyProfilesMasterRequest req) {
+		return operationAutoriService.opAuth(req);
 	}
 
 	@PostMapping("/authorblock")

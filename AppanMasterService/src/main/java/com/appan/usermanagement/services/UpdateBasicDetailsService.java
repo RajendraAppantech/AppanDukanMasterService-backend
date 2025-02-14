@@ -1,5 +1,6 @@
 package com.appan.usermanagement.services;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -395,8 +396,11 @@ public class UpdateBasicDetailsService {
 				return response;
 			}
 
-			mast.setMainWalletBalance(req.getMainWalletBalance());
-			mast.setAepsWalletBalance(req.getAepsWalletBalance());
+			BigDecimal updatedMainWalletBalance = mast.getMainWalletBalance().add(req.getMainWalletBalance());
+			BigDecimal updatedAepsWalletBalance = mast.getAepsWalletBalance().add(req.getAepsWalletBalance());
+
+			mast.setMainWalletBalance(updatedMainWalletBalance);
+			mast.setAepsWalletBalance(updatedAepsWalletBalance);
 			mast.setModifyBy(req.getUsername().toUpperCase());
 			mast.setModifyDt(new Date());
 
@@ -407,7 +411,9 @@ public class UpdateBasicDetailsService {
 			response.setMessage("Wallet balances updated successfully");
 			return response;
 
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			logger.error("Exception: ", e);
 			response.setStatus(false);
 			response.setMessage("Exception occurred");

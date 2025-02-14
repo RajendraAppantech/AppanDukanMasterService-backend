@@ -29,6 +29,7 @@ public class CreateNewIsAgreeService {
 
 			if (req.getUserAgreement() != null) {
 				existingUser.setUserAgreement(req.getUserAgreement());
+				existingUser.setKycStatus("Pending");
 			}
 
 			userManagementMasterRepository.save(existingUser);

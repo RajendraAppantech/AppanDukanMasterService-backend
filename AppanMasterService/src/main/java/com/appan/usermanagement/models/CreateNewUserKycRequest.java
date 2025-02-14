@@ -23,6 +23,9 @@ public class CreateNewUserKycRequest {
 	private String aadharFrontUploadFile;
 	private String aadharBackUploadFile;
 	private String aadharNo;
+	private String paymentMethod;
+	private String upiId;
+	private String accountType;
 
 	public String getUserId() {
 		return userId;
@@ -142,6 +145,30 @@ public class CreateNewUserKycRequest {
 
 	public void setAadharNo(String aadharNo) {
 		this.aadharNo = aadharNo;
+	}
+
+	public String getPaymentMethod() {
+		return paymentMethod;
+	}
+
+	public void setPaymentMethod(String paymentMethod) {
+		this.paymentMethod = paymentMethod;
+	}
+
+	public String getUpiId() {
+		return upiId;
+	}
+
+	public void setUpiId(String upiId) {
+		this.upiId = upiId;
+	}
+
+	public String getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
 	}
 
 }

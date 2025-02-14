@@ -16,6 +16,7 @@ public class ModifyProfilesMasterRequest {
 	private String userType;
 	private Boolean signupProfile;
 	private String status;
+	private String menu;
 
 	public String getUsername() {
 		return username;
@@ -71,6 +72,14 @@ public class ModifyProfilesMasterRequest {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getMenu() {
+		return menu;
+	}
+
+	public void setMenu(String menu) {
+		this.menu = menu;
 	}
 
 }

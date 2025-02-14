@@ -1,5 +1,6 @@
 package com.appan.usermanagement.services;
 
+import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -91,15 +92,15 @@ public class CreateNewUserService {
 				response.setRespCode("01");
 				return response;
 			}
-			
-			  // Check if mobile number already exists
-	        boolean mobileNumberExists = userManagementMasterRepository.existsByMobileNumber(req.getMobileNumber());
-	        if (mobileNumberExists) {
-	            response.setStatus(false);
-	            response.setMessage("Mobile number already exists.");
-	            response.setRespCode("05");
-	            return response;
-	        }
+
+			// Check if mobile number already exists
+			boolean mobileNumberExists = userManagementMasterRepository.existsByMobileNumber(req.getMobileNumber());
+			if (mobileNumberExists) {
+				response.setStatus(false);
+				response.setMessage("Mobile number already exists.");
+				response.setRespCode("05");
+				return response;
+			}
 
 			String prefix = getPrefixFromUserType(req.getUserType());
 			if (prefix == null) {
@@ -108,6 +109,12 @@ public class CreateNewUserService {
 				response.setRespCode("02");
 				return response;
 			}
+
+			String lastMid = userManagementMasterRepository.findLastMid();
+			String lastTid = userManagementMasterRepository.findLastTid();
+
+			String newMid = generateNextMid(lastMid);
+			String newTid = generateNextTid(lastTid);
 
 			String customUserId = generateCustomUserId(req.getUserType(), prefix);
 
@@ -129,25 +136,35 @@ public class CreateNewUserService {
 			managementMaster.setCity(req.getCity());
 			managementMaster.setBlockPo(req.getBlockPo());
 			managementMaster.setStatus("Active");
+			managementMaster.setWalletStatus("Unfreeze");
+			managementMaster.setKycStatus("Registered");
+			managementMaster.setMainWalletBalance(BigDecimal.ZERO);
+			managementMaster.setAepsWalletBalance(BigDecimal.ZERO);
 			managementMaster.setCreatedBy(req.getUsername().toUpperCase());
 			managementMaster.setCreatedDt(new Date());
+			managementMaster.setMid(newMid);
+			managementMaster.setTid(newTid);
 
 			userManagementMasterRepository.save(managementMaster);
 
 			// Fetch user menu based on userMenuType
-			UserMenu userMenu = menuRepository.findByRoleName(req.getUserMenuType());
+			UserMenu userMenu = menuRepository.findByUserProfile(req.getUserMenuType());
 			if (userMenu == null) {
 				response.setStatus(false);
 				response.setMessage("Invalid userMenuType, menu not found.");
 				response.setRespCode("04");
 				return response;
 			}
+
 			String menu = userMenu.getMenu();
 
 			String newPass = "A" + customUserId.toLowerCase().substring(0, 3) + "@" + generateOTP();
 
 			String pass = commonUtils.hashSHA256(customUserId.toUpperCase(), newPass);
 			Date passExDt = dbUtils.getExpiryDt();
+
+			// Generate hashed TPIN
+			String hashedTpin = commonUtils.hashSHA256(customUserId.toUpperCase(), defaultTpin);
 
 			// Save UserMaster entity
 			UserMaster newUser = new UserMaster();
@@ -162,7 +179,7 @@ public class CreateNewUserService {
 			newUser.setUserCode(req.getCode());
 			newUser.setPasswd(pass);
 			newUser.setPasswdExp(passExDt);
-			newUser.setTpin(defaultTpin);
+			newUser.setTpin(hashedTpin);
 			newUser.setCreatedBy(req.getUsername().toUpperCase());
 			newUser.setCreatedDt(new Date());
 			newUser.setAuthStatus("2");
@@ -180,17 +197,15 @@ public class CreateNewUserService {
 				retailerUser.setUserCode(req.getCode());
 				retailerUser.setPasswd(pass);
 				retailerUser.setPasswdExp(passExDt);
-				retailerUser.setTpin(defaultTpin);
+				retailerUser.setTpin(hashedTpin);
 				retailerUser.setCreatedBy(req.getUsername().toUpperCase());
 				retailerUser.setCreatedDt(new Date());
 				retailerUser.setAuthStatus("2");
 
 				retailerUserMasterRepository.save(retailerUser);
 			} else {
-//			    userMasterRepository.save(newUser);
+				userMasterRepository.save(newUser);
 			}
-
-			userMasterRepository.save(newUser);
 
 			String txnId = userCode + getTxnId();
 
@@ -224,6 +239,30 @@ public class CreateNewUserService {
 			response.setRespCode("03");
 			return response;
 		}
+	}
+
+	private String generateNextMid(String lastMid) {
+		String prefix = "MAD";
+		long nextNumber = 1; // Default if no previous MID exists
+
+		if (lastMid != null && lastMid.startsWith(prefix)) {
+			String numberPart = lastMid.substring(3);
+			nextNumber = Long.parseLong(numberPart) + 1;
+		}
+
+		return prefix + String.format("%012d", nextNumber);
+	}
+
+	private String generateNextTid(String lastTid) {
+		String prefix = "TAD";
+		int nextNumber = 1; // Default if no previous TID exists
+
+		if (lastTid != null && lastTid.startsWith(prefix)) {
+			String numberPart = lastTid.substring(3);
+			nextNumber = Integer.parseInt(numberPart) + 1;
+		}
+
+		return prefix + String.format("%05d", nextNumber);
 	}
 
 	private String getPrefixFromUserType(String userType) {

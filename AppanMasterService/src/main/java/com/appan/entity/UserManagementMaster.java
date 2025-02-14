@@ -198,6 +198,12 @@ public class UserManagementMaster implements Serializable {
 	@Column(name = "passport_number", length = 50)
 	private String passportNumber;
 
+	@Column(name = "mid", length = 50)
+	private String mid;
+
+	@Column(name = "tid", length = 50)	
+	private String tid;
+
 	public Long getId() {
 		return id;
 	}
@@ -664,6 +670,22 @@ public class UserManagementMaster implements Serializable {
 
 	public void setPassportNumber(String passportNumber) {
 		this.passportNumber = passportNumber;
+	}
+
+	public String getMid() {
+		return mid;
+	}
+
+	public void setMid(String mid) {
+		this.mid = mid;
+	}
+
+	public String getTid() {
+		return tid;
+	}
+
+	public void setTid(String tid) {
+		this.tid = tid;
 	}
 
 }

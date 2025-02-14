@@ -35,6 +35,9 @@ public class ProfilesMaster {
 	@Column(name = "status", length = 50)
 	private String status;
 
+	@Column(name = "menu")
+	private String menu;
+
 	@Column(name = "created_by", length = 255)
 	private String createdBy;
 
@@ -161,6 +164,14 @@ public class ProfilesMaster {
 
 	public void setAuthStatus(String authStatus) {
 		this.authStatus = authStatus;
+	}
+
+	public String getMenu() {
+		return menu;
+	}
+
+	public void setMenu(String menu) {
+		this.menu = menu;
 	}
 
 }

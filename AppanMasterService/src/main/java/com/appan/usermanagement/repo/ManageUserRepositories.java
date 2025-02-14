@@ -60,6 +60,11 @@ public class ManageUserRepositories {
 
 		boolean existsByMobileNumber(String mobileNumber);
 
+		@Query("SELECT MAX(u.mid) FROM UserManagementMaster u WHERE u.mid LIKE 'MAD%'")
+		String findLastMid();
+
+		@Query("SELECT MAX(u.tid) FROM UserManagementMaster u WHERE u.tid LIKE 'TAD%'")
+		String findLastTid();
 
 	}
 

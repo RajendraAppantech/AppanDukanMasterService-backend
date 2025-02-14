@@ -1,6 +1,7 @@
 package com.appan.usermenu.services;
 
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.appan.ErrorMessages;
 import com.appan.countrymaster.region.models.CommonResponse;
+import com.appan.entity.ProfilesMaster;
 import com.appan.entity.UserMaster;
 import com.appan.entity.UserMenu;
+import com.appan.repositories.Repositories.ProfilesMasterRepository;
 import com.appan.repositories.Repositories.UserMasterRepository;
 import com.appan.repositories.Repositories.UserMenuRepository;
 import com.appan.usermenu.model.CreateUsermenuRequest;
@@ -29,6 +32,9 @@ public class UsermenuCreateService {
 	@Autowired
 	private UserMenuRepository menuRepository;
 
+	@Autowired
+	private ProfilesMasterRepository profilesMasterRepository;
+
 	private static final Logger logger = LoggerFactory.getLogger(UsermenuCreateService.class);
 
 	public CommonResponse createUsermenu(@Valid CreateUsermenuRequest req) {
@@ -46,6 +52,15 @@ public class UsermenuCreateService {
 				return response;
 			}
 
+			List<ProfilesMaster> profile = profilesMasterRepository
+					.findByProfileName(req.getUserProfile().toUpperCase());
+			if (profile == null) {
+				response.setStatus(false);
+				response.setMessage("Invalid user profile.");
+				response.setRespCode("03");
+				return response;
+			}
+
 			boolean exists = menuRepository.existsByUserProfileAndUserRole(req.getUserProfile().toUpperCase(),
 					req.getUserRole().toUpperCase());
 			if (exists) {
@@ -58,16 +73,17 @@ public class UsermenuCreateService {
 			UserMenu newUserMenu = new UserMenu();
 			newUserMenu.setUserProfile(req.getUserProfile().toUpperCase());
 			newUserMenu.setUserRole(req.getUserRole().toUpperCase());
-			newUserMenu.setMenu("100000000000000000000000000000000000000000000000000");
-			newUserMenu.setStatus("ACTIVE");
+			newUserMenu.setStatus("Active");
 			newUserMenu.setAuthStatus("4");
 			newUserMenu.setCreatedBy(req.getUsername().toUpperCase());
 			newUserMenu.setCreatedDt(new Date());
 			newUserMenu.setRoleName(req.getRoleName());
-			
-			newUserMenu.setUserType(req.getUserType());
+
+			newUserMenu.setMenu(((ProfilesMaster) profile).getMenu());
+			newUserMenu.setUserType(((ProfilesMaster) profile).getUserType());
+
 			newUserMenu.setCode(req.getCode());
-			
+
 			menuRepository.save(newUserMenu);
 
 			response.setStatus(true);

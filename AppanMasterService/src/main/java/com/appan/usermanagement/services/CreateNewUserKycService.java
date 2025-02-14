@@ -47,7 +47,7 @@ public class CreateNewUserKycService {
 
 			if (!Strings.isNullOrEmpty(req.getPanDocumentUploadFile())) {
 				response = myUtils.saveImageToDisk(req.getPanDocumentUploadFile(), "pan_document.png",
-						serverDocPath + "user/kyc/" + newId);
+						serverDocPath + "user/kyc/" + existingUser.getId());
 
 				if (!response.isStatus())
 					return response;
@@ -58,7 +58,7 @@ public class CreateNewUserKycService {
 			if (!Strings.isNullOrEmpty(req.getBankAccountUploadFile())) {
 
 				response = myUtils.saveImageToDisk(req.getBankAccountUploadFile(), "bank_account.png",
-						serverDocPath + "user/kyc/" + newId);
+						serverDocPath + "user/kyc/" + existingUser.getId());
 
 				if (!response.isStatus())
 					return response;
@@ -70,7 +70,7 @@ public class CreateNewUserKycService {
 			if (!Strings.isNullOrEmpty(req.getAadharFrontUploadFile())) {
 
 				response = myUtils.saveImageToDisk(req.getAadharFrontUploadFile(), "aadhar_front.png",
-						serverDocPath + "user/kyc/" + newId);
+						serverDocPath + "user/kyc/" + existingUser.getId());
 
 				if (!response.isStatus())
 					return response;
@@ -80,7 +80,7 @@ public class CreateNewUserKycService {
 
 			if (!Strings.isNullOrEmpty(req.getAadharBackUploadFile())) {
 				response = myUtils.saveImageToDisk(req.getAadharBackUploadFile(), "aadhar_back.png",
-						serverDocPath + "user/kyc/" + newId);
+						serverDocPath + "user/kyc/" + existingUser.getId());
 
 				if (!response.isStatus())
 					return response;
@@ -98,7 +98,11 @@ public class CreateNewUserKycService {
 			existingUser.setAccountNumber(req.getAccountNumber());
 			existingUser.setAddressProof(req.getAddressProof());
 			existingUser.setAadharNo(req.getAadharNo());
-
+			
+			existingUser.setPaymentMethod(req.getPaymentMethod());
+			existingUser.setUpiId(req.getUpiId());
+			existingUser.setAccountType(req.getAccountType());
+			
 			userManagementMasterRepository.save(existingUser);
 
 			response.setStatus(true);

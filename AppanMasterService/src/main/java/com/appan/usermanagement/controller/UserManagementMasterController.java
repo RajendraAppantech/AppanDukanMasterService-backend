@@ -43,6 +43,7 @@ import com.appan.usermanagement.services.PendingKycStatusService;
 import com.appan.usermanagement.services.UpdateBasicDetailsService;
 import com.appan.usermanagement.services.UserManagementFetchService;
 import com.appan.usermanagement.services.UserManagementSearchUserService;
+import com.appan.usermanagement.services.UserManagementService;
 import com.appan.usermanagement.services.UserMappingService;
 import com.appan.usermanagement.services.ViewChildDetailsService;
 import com.appan.usermanagement.services.ViewParentDetailsService;
@@ -104,6 +105,9 @@ public class UserManagementMasterController {
 
 	@Autowired
 	private ModifySettlementService modifySettlementService;
+
+	@Autowired
+	private UserManagementService userManagementService;
 
 	// old
 	@PostMapping("/create")
@@ -242,6 +246,11 @@ public class UserManagementMasterController {
 	@PostMapping("/getUserType")
 	public GetParentDetailsResponse getUserType(@Valid @RequestBody UserManagementFetchRequest req) {
 		return getParentDetailsService.getUserType(req);
+	}
+
+	@PostMapping("/fetchUpperUserTypes")
+	public GetParentDetailsResponse getLowerRankedUserTypes(@Valid @RequestBody UserManagementFetchRequest req) {
+		return userManagementService.getLowerRankedUserTypes(req);
 	}
 
 	@PostMapping("/getProfile")

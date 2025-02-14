@@ -44,11 +44,13 @@ public class FetchUserRoleService {
 				return response;
 			}
 
-			List<UserMenu> userMenuList = menuRepository.findByUserProfileAndAuthStatus(req.getUserProfile(), "1");
+			//List<UserMenu> userMenuList = menuRepository.findByUserProfile(req.getUserProfile());
+			List<UserMenu> userMenuList = menuRepository.findAllByUserProfile(req.getUserProfile());
+
 
 			if (userMenuList.isEmpty()) {
 				response.setStatus(false);
-				response.setMessage("No roles found for this user profile with auth_status = 1.");
+				response.setMessage("No roles found for this user profile.");
 				response.setRespCode("02");
 				return response;
 			}

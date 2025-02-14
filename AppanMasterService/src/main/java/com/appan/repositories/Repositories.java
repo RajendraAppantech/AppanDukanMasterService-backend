@@ -328,9 +328,14 @@ public class Repositories {
 		@Query("SELECT COUNT(u.sessionId) FROM UserMaster u WHERE u.sessionId = :sessionId")
 		Long countSessionBySessionId(@Param("sessionId") UUID sessionId);
 
+		List<UserMaster> findByUserProfileAndUserRole(String profileName, String userType);
+
 	}
 
 	public interface RetailerUserMasterRepository extends JpaRepository<RetailerUserMaster, String> {
+
+		List<RetailerUserMaster> findByUserProfileAndUserRole(String profileName, String userType);
+
 	}
 
 	public interface UserMenuRepository extends JpaRepository<UserMenu, Long> {
@@ -366,6 +371,18 @@ public class Repositories {
 		List<String> findAllUserProfiles();
 
 		UserMenu findByRoleName(String userMenuType);
+
+
+		Optional<UserMenu> findByUserProfileIgnoreCase(String profileName);
+
+		UserMenu findByUserProfile(String userMenuType);
+
+//		List<UserMenu> findByUserProfile(String userMenuType);
+		
+		  List<UserMenu> findAllByUserProfile(String userMenuType);
+
+
+
 
 	}
 
@@ -862,6 +879,9 @@ public class Repositories {
 		List<UserTypeMaster> findByStatus(String string);
 
 		UserTypeMaster findByUserType(String userType);
+
+		@Query("SELECT u FROM UserTypeMaster u WHERE u.userRank < :userRank ORDER BY u.userRank DESC")
+		List<UserTypeMaster> findLowerRankedUserTypes(@Param("userRank") int userRank);
 
 	}
 

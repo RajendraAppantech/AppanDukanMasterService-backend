@@ -39,7 +39,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class RequestHeaderFilter  /*extends OncePerRequestFilter */{
+public class RequestHeaderFilter /*extends OncePerRequestFilter */{
 
 	private static final Logger logger = LoggerFactory.getLogger(RequestHeaderFilter.class);
 
